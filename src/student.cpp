@@ -71,18 +71,18 @@ string display(Stack& s) {
 
 // SOAL 1
 bool push(Stack& s, int nilai) {
-    Node* newnode = new Node;
-    if (newnode == nullptr) return false;  // gagal alokasi memori
-    newnode->data = nilai;
-    newnode->next = s.top;
-    s.top = newnode;
+    Node* temp = new Node;
+    temp->data = nilai;
+    temp->next = s.top;
+    s.top = temp;
     return true;
 }
 
 // SOAL 2
 bool pop(Stack& s, int& nilai) {
-    if (s.top == nullptr) return false;
-
+    if (s.top == nullptr){
+        return false;
+    }
     Node* temp = s.top;
     nilai = temp->data;
     s.top = temp->next;
@@ -93,32 +93,47 @@ bool pop(Stack& s, int& nilai) {
 // SOAL 3
 void clear(Stack& s) {
     int temp;
-    while (pop(s, temp)) { }
+    while (s.top != nullptr) {
+        Node* temp = s.top;
+        s.top = s.top->next;
+        delete temp;
+    }
 }
 
 // SOAL 4
 bool kurungSeimbang(const string& ekspresi) {
-    Stack stack;
-    inisialisasi(stack);
-    for (char c : ekspresi) {
-        if (c == '(' || c == '[' || c == '{') {
-            push(stack, c);
-        } else if (c == ')' || c == ']' || c == '}') {
-            int atas;
-            if (!pop(stack, atas)) { 
-                clear(stack); 
+    Stack s;
+    inisialisasi(s);
+
+    for(char c : ekspresi){
+        if(c == '(' || c == '[' || c == '{'){
+            push(s, c);
+        }else if(c == ')' || c == ']' || c == '}'){
+            if (s.top == nullptr){
+                clear(s);
                 return false;
             }
-            bool cocok = (c == ')' && atas == '(') || (c == ']' && atas == '[') || (c == '}' && atas == '{');
-            if (!cocok) {
-                clear(stack);
+
+            int buka;
+            pop(s, buka);
+
+            if(c == ')' && buka != '('){
+                clear(s);
+                return false;
+            }
+            if(c == ']' && buka != '['){
+                clear(s);
+                return false;
+            }
+            if(c == '}' && buka != '{'){
+                clear(s);
                 return false;
             }
         }
     }
-    bool seimbang = (stack.top == nullptr);
-    clear(stack);
-    return seimbang;
+    bool hasil = (s.top == nullptr);
+    clear(s);
+    return hasil;
 }
 
 // =============================================================================
